@@ -4,3 +4,11 @@ requests==2.31.0
 googletrans==4.0.0rc1
 python-dotenv==1.0.0
 nltk==3.8.1
+
+
+
+Flask-Limiter==3.3.3
+deep-translator==1.11.4
+translate==3.6.1
+
+psutil==5.9.5
