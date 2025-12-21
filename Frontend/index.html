@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Batch Text Translator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+    }
+    input, select, button {
+      margin-top: 10px;
+      display: block;
+      width: 100%;
+      padding: 8px;
+      font-size: 14px;
+    }
+    a {
+      margin-top: 20px;
+      display: inline-block;
+      font-weight: bold;
+      text-decoration: none;
+      color: #007BFF;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Batch Text Translator</h2>
+
+  <label for="file">Upload .txt file:</label>
+  <input type="file" id="file" accept=".txt">
+
+  <label for="language">Select Target Language:</label>
+  <select id="language">
+    <option value="hi">Hindi</option>
+    <option value="es">Spanish</option>
+    <option value="fr">French</option>
+    <option value="de">German</option>
+    <option value="en">English</option>
+  </select>
+
+  <button id="translateBtn">Translate & Download ZIP</button>
+
+  <div id="status" style="margin-top:20px;"></div>
+  <a id="downloadLink" href="#" style="display:none;" download>Download Translated ZIP</a>
+
+  <script>
+    const translateBtn = document.getElementById('translateBtn');
+    const fileInput = document.getElementById('file');
+    const languageSelect = document.getElementById('language');
+    const statusDiv = document.getElementById('status');
+    const downloadLink = document.getElementById('downloadLink');
+
+    translateBtn.addEventListener('click', async () => {
+      if (!fileInput.files.length) {
+        alert("Please select a .txt file");
+        return;
+      }
+
+      const file = fileInput.files[0];
+      const language = languageSelect.value;
+
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("language", language);
+
+      statusDiv.innerText = "Translating...";
+      downloadLink.style.display = "none";
+
+      try {
+        const response = await fetch("https://YOUR_BACKEND_URL/translate", {
+          method: "POST",
+          body: formData
+        });
+
+        const data = await response.json();
+        if (data.download_url) {
+          downloadLink.href = `https://YOUR_BACKEND_URL${data.download_url}`;
+          downloadLink.style.display = "inline";
+          statusDiv.innerText = "Translation complete! Download below:";
+        } else {
+          statusDiv.innerText = "Error: " + (data.error || "Unknown error");
+        }
+
+      } catch (err) {
+        console.error(err);
+        statusDiv.innerText = "Translation failed. Check console for error.";
+      }
+    });
+  </script>
+
+</body>
+</html>
